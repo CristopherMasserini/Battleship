@@ -1,8 +1,45 @@
 import tkinter
 
+
+# Returns what state the buttons should be for relief and highlight.
+# Initially, relief = raised and color = blue.
+# If button is hit and a miss (state_all == miss), it will be sunken and green.
+# If button is hit and a hit on a hit (state_all == hit), it will be sunken and red.
+def button_state_all(state_all: str) -> tuple:
+    if state_all == "initial":
+        return "raised", "blue",
+    elif state_all == "miss":
+        return "sunken", "green"
+    elif state_all == "hit":
+        return "sunken", "red"
+
+
+# Checks if there is a ship at the location given by the column and row
+# Returns True if hit, False if miss
+def hit_check(column: int, row: int) -> bool:  # TODO finish this
+    return True
+
+
+# When a button is pressed, this creates a new, deactivated, button on top of it
+# With the correct coloring at that position
+def shot(column: int, row: int):
+    hit = hit_check(column, row)
+    if hit:
+        relief_new, color_new = button_state_all("hit")
+    else:
+        relief_new, color_new = button_state_all("miss")
+
+    hit_button = tkinter.Button(mainWindow,
+                                text=f"({column},{row})", highlightbackground=color_new, relief=relief_new,
+                                state="disabled")
+    hit_button.grid(row=row, column=column, sticky="nsew")
+    resultRow.delete(0, 'end')
+    resultCol.delete(0, 'end')
+
+
 mainWindow = tkinter.Tk()
 
-mainWindow.title("Battle Ship")
+mainWindow.title("Battleship")
 mainWindow.geometry("1280x960-8-200")
 
 # Configure the columns and the rows
@@ -12,7 +49,7 @@ for i in range(0, 11):
     mainWindow.rowconfigure(i, weight=1)
 
 # Adds things on the top row. # TODO change so it gives direction about whose board on left and right
-label = tkinter.Label(mainWindow, text="Battle Ships")
+label = tkinter.Label(mainWindow, text="Battleship")
 label.grid(row=0, column=10)
 
 # Creates the separating frame between the two players boards
@@ -22,11 +59,14 @@ separating_frame.grid(row=1, column=10, sticky="nsew", columnspan=1, rowspan=10)
 
 # Creates left player board. Buttons should be clicked to "attack" enemy ships.
 # # If a button is clicked where a ship is, should turn red and the ship take damage/be destroyed
+relief, color = button_state_all("initial")
 left_frame = tkinter.Frame(mainWindow, relief="sunken", borderwidth=1)
 left_frame.grid(row=1, column=0, sticky="nsew", columnspan=10, rowspan=10)
 for x in range(0, 10):
     for y in range(1, 11):
-        missile_button = tkinter.Button(mainWindow, text=f"({x},{y})", fg="blue")
+        missile_button = tkinter.Button(mainWindow,
+                                        text=f"({x},{y})", relief=relief, highlightbackground=color,
+                                        state="disabled")
         missile_button.grid(row=y, column=x, sticky="nsew")
 
 # Creates right player board. Buttons should be clicked to "attack" enemy ships.
@@ -35,8 +75,25 @@ right_frame = tkinter.Frame(mainWindow, relief="sunken", borderwidth=1)
 right_frame.grid(row=1, column=11, sticky="nsew", columnspan=10, rowspan=10)
 for x in range(11, 21):
     for y in range(1, 11):
-        missile_button = tkinter.Button(mainWindow, text=f"({x},{y})", fg="blue", bg="green")
+        missile_button = tkinter.Button(mainWindow,
+                                        text=f"({x},{y})", relief=relief, highlightbackground=color,
+                                        state="disabled")
         missile_button.grid(row=y, column=x, sticky="nsew")
+
+
+resultLabelCol = tkinter.Label(mainWindow, text="Column to attack. (0-9) or (11-20)", bg="gray")
+resultLabelCol.grid(row=3, column=10, sticky="nsew")
+resultCol = tkinter.Entry(mainWindow, textvariable=str)
+resultCol.grid(row=3, column=10, sticky="sew")
+
+resultLabelRow = tkinter.Label(mainWindow, text="Row to attack. (1-10)", bg="gray")
+resultLabelRow.grid(row=4, column=10, sticky="nsew")
+resultRow = tkinter.Entry(mainWindow, textvariable=str)
+resultRow.grid(row=4, column=10, sticky="sew")
+
+shoot_button = tkinter.Button(mainWindow, text=f"Shoot!", relief="raised", highlightbackground="red",
+                              command=lambda: shot(resultCol.get(), resultRow.get()))
+shoot_button.grid(row=5, column=10, sticky="nsew")
 
 if __name__ == "__main__":
     mainWindow.mainloop()
