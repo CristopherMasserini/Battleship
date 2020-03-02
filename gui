@@ -100,6 +100,16 @@ def quit_game():
     quit_button.grid(row=10, column=10, sticky="sew")
 
 
+# Adds a label clearly stating if it was a hit or miss
+def shot_label(shot: str):
+    if shot == 'hit':
+        shot_sign = tkinter.Label(mainWindow, text=f"You hit a ship!", relief="raised", bg="red", fg="black")
+        shot_sign.grid(row=7, column=10, rowspan=2, sticky="nsew")
+    else:
+        shot_sign = tkinter.Label(mainWindow, text=f"You missed!", relief="raised", bg="green", fg="black")
+        shot_sign.grid(row=7, column=10, rowspan=2, sticky="nsew")
+
+
 # Builds the screen
 def set_up():
     mainWindow.mainloop()

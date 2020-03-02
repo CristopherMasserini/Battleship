@@ -52,8 +52,10 @@ def shot(column: int, row: int):
                 gui.score_box(player.get_score(), player2.get_score())
             else:
                 gui.score_box(player1.get_score(), player.get_score())
+            gui.shot_label("hit")
         else:
             relief_new, color_new = gui.button_state_all("miss")
+            gui.shot_label("miss")
 
         # Adding the button so that it shows if the shot hit or missed
         hit_button = gui.tkinter.Button(gui.mainWindow,
