@@ -38,19 +38,25 @@ class Players(object):
     name (str): The name of the player
     """
     def __init__(self, name):
-        self._name = name
+        self.name = name
         self.ships = list()  # List of ships under the control of the player
         self._alive = 0  # Number of ships that are alive
+        self._dead = 0  # Number of ships that are dead
 
     # A method to kill a ship from the players list of ships
     def kill_ship(self, ship: Ship):
         self.ships.remove(ship)
         self._alive -= 1
+        self._dead += 1
 
     # A method to add a ship to the players list of ships
     def add_ship(self, ship: Ship):
         self.ships.append(ship)
         self._alive += 1
+
+    # Returns the number of living and dead ships
+    def get_score(self) -> tuple:
+        return self._alive, self._dead
 
 
 # Creates a new ship with a name and length
@@ -97,24 +103,43 @@ def build_ship(name: str, length: int, offset: int) -> Ship:
             pos_next = (x, y)
             coord.append(pos_next)
 
-    print(coord)  # TODO delete
+    print(coord)  # TODO Delete later
     return Ship(name, length, coord)
+
+
+# Creates a function that will test if a ship is overlapping another for that player
+# Returns true if there is an overlap, false if not
+def overlap(ship_check: Ship, player: Players) -> bool:
+    ship_list = player.ships
+    for ship in ship_list:
+        for coord in ship_check.coordinates:
+            if coord in ship.coordinates:
+                return True
+    return False
 
 
 # A function that will add a ship to a given player of given length and name.
 # Offset is used for creating ships on correct side of the screen. See build_ship
 def create_ship(player: Players, name: str, length_of_ship: int, offset: int):
     ship_new = build_ship(name, length_of_ship, offset)
+    while True:
+        if overlap(ship_new, player):
+            ship_new = build_ship(name, length_of_ship, offset)
+        else:
+            break
     player.add_ship(ship_new)
 
 
 # Checks if there is a ship at the location given by the column and row
 # Returns True if hit, False if miss
-def hit_check(column: int, row: int, player: Players) -> bool:  # TODO ships reducing health and dying
+def hit_check(column: int, row: int, player: Players) -> bool:
     coord = (column, row)
     ship_list = player.ships
     for ship in ship_list:
         if coord in ship.coordinates:
+            ship_alive = ship.take_damage()
+            if not ship_alive:
+                player.kill_ship(ship)
             return True
     return False
 
