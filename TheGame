@@ -1,0 +1,106 @@
+import functionality as fy
+import gui
+
+
+# Creates a new game
+# Essentially creates new players as well if it is not the first game
+def new_game():
+    global player1
+    global player2
+    gui.player_boards()
+
+    if not first_game:
+        new_player1 = fy.Players("Player1")
+        new_player2 = fy.Players("Player2")
+
+        player1 = new_player1
+        player2 = new_player2
+
+    play(player1, player2, ship_num)
+
+
+# Check if a player lost. If so, a new screen pops up stating that the other player won.
+def check_lost(player: fy.Players):
+    # The method looks for a player who lost, therefore this if statement just gives the player who won
+    # Who is obviously the other player in the game
+    if player == player1:
+        play_won = player2
+    else:
+        play_won = player1
+
+    # Calls the gui to create a box for the winning player
+    if not player.ships:
+        gui.win_box(play_won.name)
+
+
+# When the shoot button is pressed, this creates a new, deactivated, button on top of the shot
+# With the correct coloring at that position
+def shot(column: int, row: int):
+    # Decides which players ships to look through
+    if 0 <= int(column) < 10:
+        player = player1
+    else:
+        player = player2
+
+    # Creating the button to to show if a hit or miss
+    if 0 <= int(column) <= 20 and 1 <= int(row) <= 10 and int(column) != 10:
+        hit = fy.hit_check(int(column), int(row), player)
+        if hit:
+            relief_new, color_new = gui.button_state_all("hit")
+            # Updating the score box if the shot results in a kill
+            if player == player1:
+                gui.score_box(player.get_score(), player2.get_score())
+            else:
+                gui.score_box(player1.get_score(), player.get_score())
+        else:
+            relief_new, color_new = gui.button_state_all("miss")
+
+        # Adding the button so that it shows if the shot hit or missed
+        hit_button = gui.tkinter.Button(gui.mainWindow,
+                                        text=f"({column},{row})", highlightbackground=color_new, relief=relief_new,
+                                        state="disabled")
+        hit_button.grid(row=row, column=column, sticky="nsew")
+
+        # Resetting the entry widgets to be blank
+        gui.resultRow.delete(0, 'end')
+        gui.resultCol.delete(0, 'end')
+
+    check_lost(player)
+
+
+# Plays the game for the two players and set number of ships
+# Player B is on the right hand side of the screen, hence the offset.
+def play(player_a, player_b, ships):
+
+    # Creates shoot button. Needs to be here because of dependencies
+    shoot_button = gui.tkinter.Button(gui.mainWindow, text=f"Shoot!", relief="raised",
+                                      highlightbackground="red", command=lambda: shot(gui.resultCol.get(),
+                                                                                      gui.resultRow.get()))
+    shoot_button.grid(row=5, column=10, sticky="nsew")
+
+    # Creates a new game button
+    new_game_button = gui.tkinter.Button(gui.mainWindow, text="New Game", command=new_game)
+    new_game_button.grid(row=10, column=10, sticky="new")
+
+    gui.quit_game()
+
+    # Offset used for ship creation on correct side of the screen
+    offset = 11
+    for i in range(1, ships + 1):
+        ship_name_a = "Ship" + str(i) + "A"
+        ship_name_b = "Ship" + str(i) + "B"
+
+        fy.create_ship(player_a, ship_name_a, i, 0)
+        fy.create_ship(player_b, ship_name_b, i, offset)
+
+    gui.score_box(player1.get_score(), player2.get_score())
+    gui.set_up()
+
+
+if __name__ == "__main__":
+    first_game = True
+    ship_num = 4
+    player1 = fy.Players("Player1")
+    player2 = fy.Players("Player2")
+    new_game()
+    first_game = False
