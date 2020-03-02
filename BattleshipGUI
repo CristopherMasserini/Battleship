@@ -1,5 +1,8 @@
 import tkinter
 
+# First is some set up and creation of functions to be used for ease
+# In the building of the user interface
+
 
 # Returns what state the buttons should be for relief and highlight.
 # Initially, relief = raised and color = blue.
@@ -14,29 +17,7 @@ def button_state_all(state_all: str) -> tuple:
         return "sunken", "red"
 
 
-# Checks if there is a ship at the location given by the column and row
-# Returns True if hit, False if miss
-def hit_check(column: int, row: int) -> bool:  # TODO finish this
-    return True
-
-
-# When a button is pressed, this creates a new, deactivated, button on top of it
-# With the correct coloring at that position
-def shot(column: int, row: int):
-    hit = hit_check(column, row)
-    if hit:
-        relief_new, color_new = button_state_all("hit")
-    else:
-        relief_new, color_new = button_state_all("miss")
-
-    hit_button = tkinter.Button(mainWindow,
-                                text=f"({column},{row})", highlightbackground=color_new, relief=relief_new,
-                                state="disabled")
-    hit_button.grid(row=row, column=column, sticky="nsew")
-    resultRow.delete(0, 'end')
-    resultCol.delete(0, 'end')
-
-
+# Creation of the user interface
 mainWindow = tkinter.Tk()
 
 mainWindow.title("Battleship")
@@ -91,9 +72,10 @@ resultLabelRow.grid(row=4, column=10, sticky="nsew")
 resultRow = tkinter.Entry(mainWindow, textvariable=str)
 resultRow.grid(row=4, column=10, sticky="sew")
 
-shoot_button = tkinter.Button(mainWindow, text=f"Shoot!", relief="raised", highlightbackground="red",
-                              command=lambda: shot(resultCol.get(), resultRow.get()))
-shoot_button.grid(row=5, column=10, sticky="nsew")
+
+def set_up():
+    mainWindow.mainloop()
+
 
 if __name__ == "__main__":
-    mainWindow.mainloop()
+    set_up()
