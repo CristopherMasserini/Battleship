@@ -17,7 +17,7 @@ class Ship(object):
         self._name = name
         self._length = length
         self._health = length
-        self._coordinates = coordinates
+        self.coordinates = coordinates
         self._alive = True
 
     # A method for the ship to take damage
@@ -39,31 +39,30 @@ class Players(object):
     """
     def __init__(self, name):
         self._name = name
-        self._ships = list()  # List of ships under the control of the player
+        self.ships = list()  # List of ships under the control of the player
         self._alive = 0  # Number of ships that are alive
 
     # A method to kill a ship from the players list of ships
     def kill_ship(self, ship: Ship):
-        self._ships.remove(ship)
+        self.ships.remove(ship)
         self._alive -= 1
 
     # A method to add a ship to the players list of ships
     def add_ship(self, ship: Ship):
-        self._ships.append(ship)
+        self.ships.append(ship)
         self._alive += 1
 
 
-# Creates a new ship
-def build_ship(name: str, length: int) -> Ship:
+# Creates a new ship with a name and length
+# Offset is used for the creation of players ship on the right hand side of the screen
+# Offset should be set to zero for player on left hand side
+def build_ship(name: str, length: int, offset: int) -> Ship:
     coord = list()  # Coordinates of the ship
     orient1 = random.randint(0, 1)  # 0 = horizontal or 1 = vertical
     orient2 = random.randint(0, 1)  # 0 is up/right, 1 is down/left based off of first orient
-    print(orient1)  # TODO delete
-    print(orient2)  # TODO delete
-    print(length)  # TODO delete
     if orient1 == 0 and orient2 == 0:  # Horizontal and right
-        x = random.randint(0, 10 - length + 1)
-        y = random.randint(0, 10)
+        x = random.randint(0, 10 - length) + offset
+        y = random.randint(1, 10)
         pos = (x, y)  # Position of the tip of the ship
         coord.append(pos)
         for i in range(1, length):  # Creates the coordinates for the rest of the ship based off orientation
@@ -71,26 +70,26 @@ def build_ship(name: str, length: int) -> Ship:
             pos_next = (x, y)
             coord.append(pos_next)
     elif orient1 == 0 and orient2 == 1:  # Horizontal and left
-        x = random.randint(length, 10)
-        y = random.randint(0, 10)
+        x = random.randint(length - 1, 9) + offset
+        y = random.randint(1, 10)
         pos = (x, y)  # Position of the tip of the ship
         coord.append(pos)
         for i in range(1, length):  # Creates the coordinates for the rest of the ship based off orientation
             x -= 1
             pos_next = (x, y)
             coord.append(pos_next)
-    elif orient1 == 1 and orient2 == 0:  # vertical and up
-        x = random.randint(0, 10)
-        y = random.randint(length, 10)
+    elif orient1 == 1 and orient2 == 0:  # vertical and up. Up meaning an increase in the y, which is physically down
+        x = random.randint(0, 9) + offset
+        y = random.randint(1, (10 - length) + 1)
         pos = (x, y)  # Position of the tip of the ship
         coord.append(pos)
         for i in range(1, length):  # Creates the coordinates for the rest of the ship based off orientation
             y += 1
             pos_next = (x, y)
             coord.append(pos_next)
-    else:  # orient1 = 1, orient2 = 1, vertical and down
-        x = random.randint(0, 10 - length + 1)
-        y = random.randint(0, 10)
+    else:  # orient1 = 1, orient2 = 1, vertical and down. Down meaning a decrease in the y, which is physically up
+        x = random.randint(0, 9) + offset
+        y = random.randint(length, 10)
         pos = (x, y)  # Position of the tip of the ship
         coord.append(pos)
         for i in range(1, length):  # Creates the coordinates for the rest of the ship based off orientation
@@ -102,10 +101,22 @@ def build_ship(name: str, length: int) -> Ship:
     return Ship(name, length, coord)
 
 
-# A function that will add a ship to a given player of given length and name
-def create_ship(player: Players, name: str, length_of_ship: int):
-    ship_new = build_ship(name, length_of_ship)
+# A function that will add a ship to a given player of given length and name.
+# Offset is used for creating ships on correct side of the screen. See build_ship
+def create_ship(player: Players, name: str, length_of_ship: int, offset: int):
+    ship_new = build_ship(name, length_of_ship, offset)
     player.add_ship(ship_new)
+
+
+# Checks if there is a ship at the location given by the column and row
+# Returns True if hit, False if miss
+def hit_check(column: int, row: int, player: Players) -> bool:  # TODO ships reducing health and dying
+    coord = (column, row)
+    ship_list = player.ships
+    for ship in ship_list:
+        if coord in ship.coordinates:
+            return True
+    return False
 
 
 if __name__ == "__main__":
