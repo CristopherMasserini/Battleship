@@ -9,7 +9,7 @@ class Ship(object):
     as well as the orientation
 
     name (str): The name of the ship
-    length (int): The length of the ship. Between 1 and 4 for ease of gaming
+    length (int): The length of the ship. Between 2 and 5 for ease of gaming
     health (int): The health of the ship. Initially the length of the ship
     coordinates (list of tuples): coordinates the ship is located in as: [(x1, y1), (x2, y2), ...]
     """
@@ -20,13 +20,17 @@ class Ship(object):
         self.coordinates = coordinates
         self._alive = True
 
+    # Gets if the ship is alive
+    def get_alive(self) -> bool:
+        return self._alive
+
     # A method for the ship to take damage
     # If the health drops to zero, the ship is dead
     def take_damage(self) -> bool:
         self._health -= 1
         if self._health == 0:
             self._alive = False
-        return self._alive
+        return self.get_alive()
 
 
 class Players(object):
@@ -42,6 +46,11 @@ class Players(object):
         self.ships = list()  # List of ships under the control of the player
         self._alive = 0  # Number of ships that are alive
         self._dead = 0  # Number of ships that are dead
+
+    def reset(self):
+        self.ships = list()
+        self._alive = 0
+        self._dead = 0
 
     # A method to kill a ship from the players list of ships
     def kill_ship(self, ship: Ship):
@@ -132,16 +141,20 @@ def create_ship(player: Players, name: str, length_of_ship: int, offset: int):
 
 # Checks if there is a ship at the location given by the column and row
 # Returns True if hit, False if miss
-def hit_check(column: int, row: int, player: Players) -> bool:
+def hit_check(column: int, row: int, player: Players) -> tuple:
+    hit = False
+    kill = False
     coord = (column, row)
     ship_list = player.ships
     for ship in ship_list:
         if coord in ship.coordinates:
             ship_alive = ship.take_damage()
+            hit = True
             if not ship_alive:
                 player.kill_ship(ship)
-            return True
-    return False
+                kill = True
+            return hit, kill
+    return hit, kill
 
 
 if __name__ == "__main__":
