@@ -88,15 +88,9 @@ def score_box(p1_score: tuple, p2_score: tuple):
     p2_score_box.grid(row=0, column=14, sticky="nsew", columnspan=4)
 
 
-# # Shows a screen if the player lost
-# def win_box(player_name: str):
-#     win = tkinter.Label(mainWindow, text=f"{player_name} won the game!", relief="raised", bg="black", fg="white")
-#     win.grid(row=3, column=9, columnspan=3, rowspan=3, sticky="nsew")
-
-
-# Adds a quit button to quit game TODO fix bug having to press quit multiple times if new game is pressed
+# Adds a quit button to quit game
 def quit_game():
-    quit_button = tkinter.Button(mainWindow, text="Quit", command=mainWindow.quit)
+    quit_button = tkinter.Button(mainWindow, text="Quit", command=mainWindow.destroy)
     quit_button.grid(row=10, column=10, sticky="sew")
 
 
