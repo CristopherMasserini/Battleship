@@ -63,17 +63,15 @@ label.grid(row=0, column=10)
 separating_frame = tkinter.Frame(mainWindow, relief="raised", borderwidth=1, background="gray")
 separating_frame.grid(row=1, column=10, sticky="nsew", columnspan=1, rowspan=10)
 
-# Creates the entry to enter the column where one wants to fire
-resultLabelCol = tkinter.Label(mainWindow, text="Column to attack. (0-9) or (11-20)", bg="gray")
-resultLabelCol.grid(row=3, column=10, sticky="nsew")
-resultCol = tkinter.Entry(mainWindow, textvariable=str)
-resultCol.grid(row=3, column=10, sticky="sew")
-
-# Creates the entry to enter the row where one wants to fire
-resultLabelRow = tkinter.Label(mainWindow, text="Row to attack. (1-10)", bg="gray")
-resultLabelRow.grid(row=4, column=10, sticky="nsew")
-resultRow = tkinter.Entry(mainWindow, textvariable=str)
-resultRow.grid(row=4, column=10, sticky="sew")
+# Creates the entry to enter the column and row where one wants to fire
+resultLabel = tkinter.Label(mainWindow, text="             Column to attack \t Row to attack", bg="gray", anchor="w")
+resultLabel.grid(row=4, column=10, sticky="new")
+resultFrame = tkinter.Label(mainWindow)
+resultFrame.grid(row=4, column=10, sticky="sew")
+resultCol = tkinter.Entry(resultFrame)
+resultRow = tkinter.Entry(resultFrame)
+resultCol.pack(side="left")
+resultRow.pack(side="right")
 
 
 # Creates the label to show the number of ships left for player one and player two
@@ -88,16 +86,17 @@ def score_box(p1_score: tuple, p2_score: tuple):
     p2_score_box.grid(row=0, column=14, sticky="nsew", columnspan=4)
 
 
-# # Shows a screen if the player lost
-# def win_box(player_name: str):
-#     win = tkinter.Label(mainWindow, text=f"{player_name} won the game!", relief="raised", bg="black", fg="white")
-#     win.grid(row=3, column=9, columnspan=3, rowspan=3, sticky="nsew")
-
-
-# Adds a quit button to quit game TODO fix bug having to press quit multiple times if new game is pressed
+# Adds a quit button to quit game
 def quit_game():
-    quit_button = tkinter.Button(mainWindow, text="Quit", command=mainWindow.quit)
-    quit_button.grid(row=10, column=10, sticky="sew")
+    quit_button = tkinter.Button(mainWindow, text="Quit", command=mainWindow.destroy)
+    quit_button.grid(row=10, column=10, sticky="nsew")
+
+
+# Adds a label clearly stating if it was a hit or miss
+def wins_label(p1_wins: int, p2_wins: int):
+    wins_board = tkinter.Label(mainWindow, text=f"Games won\n\nPlayer 1: {p1_wins}\nPlayer 2: {p2_wins}",
+                               relief="raised", bg="black", fg="white")
+    wins_board.grid(row=1, column=10, rowspan=2, sticky="nsew")
 
 
 # Adds a label clearly stating if it was a hit or miss
