@@ -46,7 +46,9 @@ class Players(object):
         self.ships = list()  # List of ships under the control of the player
         self._alive = 0  # Number of ships that are alive
         self._dead = 0  # Number of ships that are dead
+        self._wins = 0  # Number of wins a player has in one run of the program
 
+    # Resets the variables
     def reset(self):
         self.ships = list()
         self._alive = 0
@@ -66,6 +68,14 @@ class Players(object):
     # Returns the number of living and dead ships
     def get_score(self) -> tuple:
         return self._alive, self._dead
+
+    # Returns the number of wins
+    def get_wins(self) -> int:
+        return self._wins
+
+    # Adds one to the win
+    def add_win(self):
+        self._wins += 1
 
 
 # Creates a new ship with a name and length
