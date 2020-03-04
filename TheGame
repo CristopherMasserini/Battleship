@@ -13,6 +13,8 @@ def check_lost(player: fy.Players):
 
     # Calls the gui to create a box for the winning player
     if not player.ships:
+        play_won.add_win()
+        gui.wins_label(player1.get_wins(), player2.get_wins())
         gui.shot_label(play_won.name)
 
 
@@ -78,7 +80,7 @@ def play(player_a, player_b, ships):
     # Creates a new game button
     new_game_button = gui.tkinter.Button(gui.mainWindow, text="New Game",
                                          command=new_game)
-    new_game_button.grid(row=10, column=10, sticky="new")
+    new_game_button.grid(row=9, column=10, sticky="nsew")
 
     # Offset used for ship creation on correct side of the screen
     offset = 11
@@ -90,12 +92,13 @@ def play(player_a, player_b, ships):
         fy.create_ship(player_b, ship_name_b, i, offset)
 
     gui.score_box(player_a.get_score(), player_b.get_score())
+    gui.wins_label(player1.get_wins(), player2.get_wins())
     gui.set_up()
 
 
 if __name__ == "__main__":
     gui.quit_game()
-    ship_num = 1
+    ship_num = 4
     player1 = fy.Players("Player1")
     player2 = fy.Players("Player2")
     play(player1, player2, ship_num)

@@ -92,11 +92,12 @@ def quit_game():
     quit_button.grid(row=10, column=10, sticky="nsew")
 
 
-# Adds a label clearly stating if it was a hit or miss
+# Adds a label clearly stating who won
 def wins_label(p1_wins: int, p2_wins: int):
     wins_board = tkinter.Label(mainWindow, text=f"Games won\n\nPlayer 1: {p1_wins}\nPlayer 2: {p2_wins}",
                                relief="raised", bg="black", fg="white")
     wins_board.grid(row=1, column=10, rowspan=2, sticky="nsew")
+
 
 
 # Adds a label clearly stating if it was a hit or miss
