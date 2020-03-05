@@ -1,5 +1,4 @@
 import functionality as fy
-import gui
 
 
 # Check if a player lost. If so, a new screen pops up stating that the other player won.
@@ -18,7 +17,7 @@ def check_lost(player: fy.Players):
                                                 state="disabled", highlightbackground="gray")
         cover_shoot_button.grid(row=5, column=10, sticky="nsew")
         play_won.add_win()
-        gui.wins_label(player1.get_wins(), player2.get_wins())
+        gui.wins_label(player1.get_wins(), player2.get_wins(), player1.name, player2.name)
         gui.shot_label(play_won.name)
 
 
@@ -43,9 +42,9 @@ def shot(column: int, row: int):
             relief_new, color_new = gui.button_state_all("hit")
             # Updating the score box if the shot results in a kill
             if player == player1:
-                gui.score_box(player.get_score(), player2.get_score())
+                gui.score_box(player.get_score(), player2.get_score(), player1.name, player2.name)
             else:
-                gui.score_box(player1.get_score(), player.get_score())
+                gui.score_box(player1.get_score(), player.get_score(), player1.name, player2.name)
 
             if kill:
                 gui.shot_label("kill")
@@ -74,6 +73,7 @@ def new_game():
     player1.reset()
     player2.reset()
     play(player1, player2, ship_num)
+    gui.set_up()
 
 
 # Plays the game for the two players and set number of ships
@@ -101,14 +101,18 @@ def play(player_a, player_b, ships):
         fy.create_ship(player_a, ship_name_a, i, 0)
         fy.create_ship(player_b, ship_name_b, i, offset)
 
-    gui.score_box(player_a.get_score(), player_b.get_score())
-    gui.wins_label(player1.get_wins(), player2.get_wins())
-    gui.set_up()
+    gui.score_box(player_a.get_score(), player_b.get_score(), player1.name, player2.name)
+    gui.wins_label(player1.get_wins(), player2.get_wins(), player1.name, player2.name)
+    # gui.set_up()
 
 
 if __name__ == "__main__":
+    ship_num = int(input("Please say how many ships: "))
+    p1 = input("Please input Player 1's name: ")
+    p2 = input("Please input Player 2's name: ")
+    import gui
     gui.quit_game()
-    ship_num = int(input("Please Enter Number of Ships "))
-    player1 = fy.Players("Player1")
-    player2 = fy.Players("Player2")
+    player1 = fy.Players(p1)
+    player2 = fy.Players(p2)
     play(player1, player2, ship_num)
+    gui.set_up()
