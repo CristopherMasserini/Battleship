@@ -55,7 +55,7 @@ for i in range(0, 11):
     mainWindow.rowconfigure(i, weight=1)
 
 # Adds name of the game on the top row.
-label = tkinter.Label(mainWindow, text="Battleship")
+label = tkinter.Label(mainWindow)
 label.grid(row=0, column=10)
 
 # Creates the separating frame between the two players boards
@@ -75,14 +75,14 @@ resultRow.pack(side="right")
 
 
 # Creates the label to show the number of ships left for player one and player two
-def score_box(p1_score: tuple, p2_score: tuple):
+def score_box(p1_score: tuple, p2_score: tuple, p1_name: str, p2_name: str):
     p1_alive, p1_dead = p1_score
     p2_alive, p2_dead = p2_score
 
-    p1_score_box = tkinter.Label(mainWindow, text=f"Ships for Player 1\nAlive:{p1_alive}    Dead:{p1_dead}")
+    p1_score_box = tkinter.Label(mainWindow, text=f"Ships for {p1_name}\nAlive:{p1_alive}    Dead:{p1_dead}")
     p1_score_box.grid(row=0, column=3, sticky="nsew", columnspan=4)
 
-    p2_score_box = tkinter.Label(mainWindow, text=f"Ships for Player 2\nAlive:{p2_alive}    Dead:{p2_dead}")
+    p2_score_box = tkinter.Label(mainWindow, text=f"Ships for {p2_name}\nAlive:{p2_alive}    Dead:{p2_dead}")
     p2_score_box.grid(row=0, column=14, sticky="nsew", columnspan=4)
 
 
@@ -93,11 +93,10 @@ def quit_game():
 
 
 # Adds a label clearly stating who won
-def wins_label(p1_wins: int, p2_wins: int):
-    wins_board = tkinter.Label(mainWindow, text=f"Games won\n\nPlayer 1: {p1_wins}\nPlayer 2: {p2_wins}",
+def wins_label(p1_wins: int, p2_wins: int, p1_name: str, p2_name: str):
+    wins_board = tkinter.Label(mainWindow, text=f"Games won\n\n{p1_name}: {p1_wins}\n{p2_name}: {p2_wins}",
                                relief="raised", bg="black", fg="white")
     wins_board.grid(row=1, column=10, rowspan=2, sticky="nsew")
-
 
 
 # Adds a label clearly stating if it was a hit or miss
