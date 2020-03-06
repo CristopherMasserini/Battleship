@@ -103,11 +103,10 @@ def play(player_a, player_b, ships):
 
     gui.score_box(player_a.get_score(), player_b.get_score(), player1.name, player2.name)
     gui.wins_label(player1.get_wins(), player2.get_wins(), player1.name, player2.name)
-    # gui.set_up()
 
 
 if __name__ == "__main__":
-    ship_num = int(input("Please say how many ships: "))
+    ship_num = int(input("Please input number of ships: "))
     p1 = input("Please input Player 1's name: ")
     p2 = input("Please input Player 2's name: ")
     import gui
