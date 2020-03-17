@@ -1,0 +1,13 @@
+import strategies as strat
+import functionality as fy
+
+if __name__ == "__main__":
+    ship_num = int(input("Please input number of ships: "))
+    p1_name = input("Please input Player 1's name: ")
+    p1_strat = input("Please input Player 1's strategy: ")
+    p2_name = input("Please input Player 2's name: ")
+    p2_strat = input("Please input Player 2's strategy: ")
+
+    player1 = fy.AutoPlayers(p1_name, p1_strat)
+    player2 = fy.AutoPlayers(p2_name, p2_strat)
+    # play(player1, player2, ship_num, )
