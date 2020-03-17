@@ -1,0 +1,27 @@
+import random
+
+# A file that contains different strategies for the automation of the game.
+# This is done so later on there can be an analysis of the different strategies.
+
+
+# Checks if the location has been fired upon # Todo test this
+def check_shot(x: int, y: int) -> bool:
+    return (x, y) in coordinates_shot
+
+
+# First strategy is a completely random firing, checking if the position was already fired upon, chooses a new location
+# bounds are the x and y bounds of the board for the random shot
+# returns the x and y location of the shot # Todo test this
+def random_fire(bounds: tuple) -> tuple:
+    x_min, x_max, y_min, y_max = bounds
+
+    while True:
+        x = random.randint(x_min, x_max)
+        y = random.randint(y_min, y_max)
+        if not check_shot(x, y):
+            coordinates_shot.append((x, y))
+            return x, y
+
+
+if __name__ == "__main__":
+    coordinates_shot = list()
