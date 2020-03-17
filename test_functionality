@@ -306,5 +306,26 @@ class MiscFunctionality(unittest.TestCase):
         self.assertIsNotNone(player.ships)
 
 
+class TestAutoPlayers(unittest.TestCase):
+
+    # Tests auto player creation
+    def test_auto_player_creation(self):
+        player = fy.AutoPlayers("Player", "Random")
+
+        self.assertIsInstance(player, fy.AutoPlayers)
+
+    # Tests auto player strategy
+    def test_auto_player_strat(self):
+        player = fy.AutoPlayers("Player", "Random")
+
+        self.assertEqual(player.get_strategy(), "Random")
+
+    # Tests auto player name
+    def test_auto_player_name(self):
+        player = fy.AutoPlayers("Player", "Random")
+
+        self.assertEqual(player.name, "Player")
+
+
 if __name__ == '__main__':
     unittest.main()
