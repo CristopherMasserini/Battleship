@@ -1,13 +1,88 @@
 import strategies as strat
 import functionality as fy
 
+
+# Builds the ships for the players
+def build_player_ships(player_a: fy.Players, player_b: fy.Players, ships: int):
+    offset = 11
+    for j in range(2, ships + 2):
+        ship_name_a = "Ship" + str(i) + "A"
+        ship_name_b = "Ship" + str(i) + "B"
+
+        fy.create_ship(player_a, ship_name_a, j, 0)
+        fy.create_ship(player_b, ship_name_b, j, offset)
+
+
+# Checks if someone lost the game
+def lost(player: fy.Players) -> bool:
+    alive, dead = player.get_score()
+    return alive == 0
+
+
+# Plays the automated game until someone wins
+def play(player_a: fy.Players, player_b: fy.Players, ships: int):
+    global turns_a
+    global turns_b
+    global turns_list
+
+    build_player_ships(player_a, player_b, ships)
+    player_turn = "a"
+
+    # Bounds for the player to shoot
+    player_a_bounds = (11, 20, 1, 10)
+    player_b_bounds = (0, 9, 1, 10)
+    while True:
+        if player_turn == "a":
+            x, y = strat.random_fire(player_a_bounds)
+            fy.hit_check(x, y, player_b)
+            player_turn = "b"
+            turns_a += 1
+            if lost(player_b):
+                turns_list.append(turns_a)
+                break
+        else:
+            x, y = strat.random_fire(player_b_bounds)
+            fy.hit_check(x, y, player_a)
+            player_turn = "a"
+            turns_b += 1
+            if lost(player_a):
+                turns_list.append(turns_b)
+                break
+    turns_a = 0
+    turns_b = 0
+    strat.coordinates_shot = list()
+
+
 if __name__ == "__main__":
-    ship_num = int(input("Please input number of ships: "))
-    p1_name = input("Please input Player 1's name: ")
-    p1_strat = input("Please input Player 1's strategy: ")
-    p2_name = input("Please input Player 2's name: ")
-    p2_strat = input("Please input Player 2's strategy: ")
+    # turns is used to get the number of turns it took for the winning player to win.
+    # turns_list records the turns for all the games
+    # Note: the losing player would either be 0 or 1 turn off the winner
+    turns_a = 0
+    turns_b = 0
+    turns_list = list()
+
+    # ship_num = int(input("Please input number of ships: "))
+    # p1_name = input("Please input Player 1's name: ")
+    # p1_strat = input("Please input Player 1's strategy: ")
+    # p2_name = input("Please input Player 2's name: ")
+    # p2_strat = input("Please input Player 2's strategy: ")
+    # iterations = int(input("Please input number of iterations: "))
+
+    # Todo delete this part, uncomment above after everything works
+    ship_num = 3
+    p1_name = "A"
+    p1_strat = "Random"
+    p2_name = "B"
+    p2_strat = "Random"
+    iterations = 100
 
     player1 = fy.AutoPlayers(p1_name, p1_strat)
     player2 = fy.AutoPlayers(p2_name, p2_strat)
-    # play(player1, player2, ship_num, )
+
+    # Calls play for a certain number of times, used to get statistics
+    for i in range(0, iterations):
+        play(player1, player2, ship_num)
+        player1.reset()
+        player2.reset()
+
+    print(turns_list)
