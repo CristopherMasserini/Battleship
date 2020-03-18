@@ -1,5 +1,6 @@
 import strategies as strat
 import functionality as fy
+import pandas as pd
 
 
 # Builds the ships for the players
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     # iterations = int(input("Please input number of iterations: "))
 
     # Todo delete this part, uncomment above after everything works
-    ship_num = 3
+    ship_num = 4
     p1_name = "A"
     p1_strat = "Random"
     p2_name = "B"
@@ -79,10 +80,17 @@ if __name__ == "__main__":
     player1 = fy.AutoPlayers(p1_name, p1_strat)
     player2 = fy.AutoPlayers(p2_name, p2_strat)
 
-    # Calls play for a certain number of times, used to get statistics
-    for i in range(0, iterations):
-        play(player1, player2, ship_num)
-        player1.reset()
-        player2.reset()
+    data = dict()
 
-    print(turns_list)
+    # Calls play for a certain number of times, used to get statistics
+    for s in range(1, ship_num):
+        for i in range(0, iterations):
+            play(player1, player2, s)
+            player1.reset()
+            player2.reset()
+
+        data[f"{s} ship(s)"] = turns_list
+        turns_list = list()
+
+    df = pd.DataFrame(data)
+    # df.to_csv(r'strategy_random.csv')
