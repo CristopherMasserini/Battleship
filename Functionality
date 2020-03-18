@@ -82,6 +82,21 @@ class Players(object):
         self._wins += 1
 
 
+class AutoPlayers(Players):
+    """
+    Creates a class for the automated players. A subclass of Players
+
+    name (str): The name of the player
+    strategy (str): The strategy the player is following
+    """
+    def __init__(self, name, strategy):
+        super().__init__(name=name)
+        self._strategy = strategy
+
+    def get_strategy(self) -> str:
+        return self._strategy
+
+
 # Creates a new ship with a name and length
 # Offset is used for the creation of players ship on the right hand side of the screen
 # Offset should be set to zero for player on left hand side
