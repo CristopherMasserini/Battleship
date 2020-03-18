@@ -1,11 +1,14 @@
 import random
 
+coordinates_shot = list()
+
 # A file that contains different strategies for the automation of the game.
 # This is done so later on there can be an analysis of the different strategies.
 
 
 # Checks if the location has been fired upon # Todo test this
 def check_shot(x: int, y: int) -> bool:
+    global coordinates_shot
     return (x, y) in coordinates_shot
 
 
@@ -24,4 +27,4 @@ def random_fire(bounds: tuple) -> tuple:
 
 
 if __name__ == "__main__":
-    coordinates_shot = list()
+    pass
