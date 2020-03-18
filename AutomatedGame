@@ -4,7 +4,7 @@ import pandas as pd
 
 
 # Builds the ships for the players
-def build_player_ships(player_a: fy.Players, player_b: fy.Players, ships: int):
+def build_player_ships(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
     offset = 11
     for j in range(2, ships + 2):
         ship_name_a = "Ship" + str(i) + "A"
@@ -15,13 +15,13 @@ def build_player_ships(player_a: fy.Players, player_b: fy.Players, ships: int):
 
 
 # Checks if someone lost the game
-def lost(player: fy.Players) -> bool:
+def lost(player: fy.AutoPlayers) -> bool:
     alive, dead = player.get_score()
     return alive == 0
 
 
 # Plays the automated game until someone wins
-def play(player_a: fy.Players, player_b: fy.Players, ships: int):
+def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
     global turns_a
     global turns_b
     global turns_list
@@ -32,6 +32,10 @@ def play(player_a: fy.Players, player_b: fy.Players, ships: int):
     # Bounds for the player to shoot
     player_a_bounds = (11, 20, 1, 10)
     player_b_bounds = (0, 9, 1, 10)
+
+    # Shoots a shot, based off strategy. Checks if the shot is a hit, then checks if the other player lost.
+    # If the other player lost, winning players turns get added to turns list
+    # The ratio of ships alive to total ships of the winning player gets added to ratio list
     while True:
         if player_turn == "a":
             x, y = strat.random_fire(player_a_bounds)
@@ -40,6 +44,9 @@ def play(player_a: fy.Players, player_b: fy.Players, ships: int):
             turns_a += 1
             if lost(player_b):
                 turns_list.append(turns_a)
+                _, dead = player_a.get_score()
+                ratio_list.append(dead/ships)
+                win_strat_list.append(player_a.get_strategy())
                 break
         else:
             x, y = strat.random_fire(player_b_bounds)
@@ -48,7 +55,12 @@ def play(player_a: fy.Players, player_b: fy.Players, ships: int):
             turns_b += 1
             if lost(player_a):
                 turns_list.append(turns_b)
+                _, dead = player_b.get_score()
+                ratio_list.append(dead/ships)
+                win_strat_list.append(player_b.get_strategy())
                 break
+
+    # Resets these values so for bookkeeping
     turns_a = 0
     turns_b = 0
     strat.coordinates_shot = list()
@@ -61,16 +73,18 @@ if __name__ == "__main__":
     turns_a = 0
     turns_b = 0
     turns_list = list()
+    ratio_list = list()
+    win_strat_list = list()
 
     # ship_num = int(input("Please input number of ships: "))
     # p1_name = input("Please input Player 1's name: ")
-    # p1_strat = input("Please input Player 1's strategy: ")
+    # p1_strat = input("Please input Player 1's strategy \n (Random): ")
     # p2_name = input("Please input Player 2's name: ")
-    # p2_strat = input("Please input Player 2's strategy: ")
+    # p2_strat = input("Please input Player 2's strategy \n (Random): ")
     # iterations = int(input("Please input number of iterations: "))
 
     # Todo delete this part, uncomment above after everything works
-    ship_num = 4
+    ship_num = 5
     p1_name = "A"
     p1_strat = "Random"
     p2_name = "B"
@@ -89,8 +103,12 @@ if __name__ == "__main__":
             player1.reset()
             player2.reset()
 
-        data[f"{s} ship(s)"] = turns_list
+        data[f"{s}_ship(s)_turns"] = turns_list
+        data[f"{s}_ship(s)_loser_ratio"] = ratio_list
+        data[f"{s}_ship(s)_win_strategy"] = win_strat_list
         turns_list = list()
+        ratio_list = list()
+        win_strat_list = list()
 
     df = pd.DataFrame(data)
-    # df.to_csv(r'strategy_random.csv')
+    df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
