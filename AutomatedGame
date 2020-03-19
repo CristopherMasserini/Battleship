@@ -38,7 +38,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
     # The ratio of ships alive to total ships of the winning player gets added to ratio list
     while True:
         if player_turn == "a":
-            x, y = strat.random_fire(player_a_bounds)
+            x, y = strat.strategy_choose(player_a.get_strategy(), player_a_bounds)
             fy.hit_check(x, y, player_b)
             player_turn = "b"
             turns_a += 1
@@ -49,7 +49,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
                 win_strat_list.append(player_a.get_strategy())
                 break
         else:
-            x, y = strat.random_fire(player_b_bounds)
+            x, y = strat.strategy_choose(player_a.get_strategy(), player_b_bounds)
             fy.hit_check(x, y, player_a)
             player_turn = "a"
             turns_b += 1
@@ -86,9 +86,9 @@ if __name__ == "__main__":
     # Todo delete this part, uncomment above after everything works
     ship_num = 5
     p1_name = "A"
-    p1_strat = "Random"
+    p1_strat = "Blanket"
     p2_name = "B"
-    p2_strat = "Random"
+    p2_strat = "Blanket"
     iterations = 100
 
     player1 = fy.AutoPlayers(p1_name, p1_strat)
@@ -111,4 +111,5 @@ if __name__ == "__main__":
         win_strat_list = list()
 
     df = pd.DataFrame(data)
-    df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
+    # print(df)
+    # df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
