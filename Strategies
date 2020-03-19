@@ -1,20 +1,21 @@
 import random
 
-coordinates_shot = list()
-
 # A file that contains different strategies for the automation of the game.
 # This is done so later on there can be an analysis of the different strategies.
 
+# List of the coordinates being used to shoot  # Todo make sure this stays general for mixed strategies
+coordinates_shot = list()
 
-# Checks if the location has been fired upon # Todo test this
+
+# Checks if the location has been fired upon
 def check_shot(x: int, y: int) -> bool:
     global coordinates_shot
     return (x, y) in coordinates_shot
 
 
-# First strategy is a completely random firing, checking if the position was already fired upon, chooses a new location
-# bounds are the x and y bounds of the board for the random shot
-# returns the x and y location of the shot # Todo test this
+# This strategy is a completely random firing, checking if the position was already fired upon, chooses a new location
+# Bounds are the x and y bounds of the board for the random shot
+# Returns the x and y location of the shot
 def random_fire(bounds: tuple) -> tuple:
     x_min, x_max, y_min, y_max = bounds
 
@@ -24,6 +25,40 @@ def random_fire(bounds: tuple) -> tuple:
         if not check_shot(x, y):
             coordinates_shot.append((x, y))
             return x, y
+
+
+# This strategy is to start at the minimum x and y bounds,
+# Goes across the x's, drops one y than goes back across the x's. Done until all coordinates in each row is fired upon.
+# Bounds are the x and y bounds of the board for the random shot
+# Note: Do not have to check for y going past its limit. By the time the very last coordinate is hit, all the ships
+# have to be destroyed
+# Returns the x and y location of the shot
+def blanket_fire(bounds: tuple) -> tuple:
+    x_min, x_max, y_min, y_max = bounds
+
+    # Where to put the next shot
+    # If first condition is true. Determines where to go based off length of the coordinates shot list.
+    if len(coordinates_shot) <= 1:
+        coordinates_shot.append((x_min, y_min))
+        return x_min, y_min
+    else:
+        x_prev, y_prev = coordinates_shot[len(coordinates_shot) - 2]
+        if (x_prev + 1) <= x_max:
+            coordinates_shot.append(((x_prev + 1), y_prev))
+            return (x_prev + 1), y_prev
+        else:
+            coordinates_shot.append((x_min, (y_prev + 1)))
+            return x_min, y_prev + 1
+
+
+# Takes the strategy from the player and picks the right function to use for shooting
+# strat is the strategy, bounds are the x and y bounds for the firing functions
+# Returns the x and y location of the shot # Todo test new strategies here
+def strategy_choose(strat: str, bounds: tuple) -> tuple:
+    if strat == "Random":
+        return random_fire(bounds)
+    elif strat == "Blanket":
+        return blanket_fire(bounds)
 
 
 if __name__ == "__main__":
