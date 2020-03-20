@@ -13,6 +13,16 @@ def check_shot(x: int, y: int) -> bool:
     return (x, y) in coordinates_shot
 
 
+# If an x and y coordinate is valid (in the bounds and not shot before)
+def valid_coordinate(coord: tuple, bounds: tuple) -> bool:
+    x, y = coord
+    x_min, x_max, y_min, y_max = bounds
+    if x_min <= x <= x_max and y_min <= y <= y_max and not check_shot(x, y):
+        return True
+    else:
+        return False
+
+
 # This strategy is a completely random firing, checking if the position was already fired upon, chooses a new location
 # Bounds are the x and y bounds of the board for the random shot
 # Returns the x and y location of the shot
@@ -51,14 +61,32 @@ def blanket_fire(bounds: tuple) -> tuple:
             return x_min, y_prev + 1
 
 
+# This strategy is to randomly choose a location to shoot at until there is a hit.
+# Once there is a hit, to shoot once on each side of the hit until there is another hit.
+# Once there is the second hit, follow that direction until a kill.
+# If there is a miss before the kill, need to go back to the original hit and go in the opposite direction until kill.
+# Returns the x and y location of the shot
+# Todo test
+def smart_random_fire(bounds: tuple, fire_list: list) -> tuple:
+    if len(fire_list) == 0:
+        return random_fire(bounds)
+    else:
+        while True:
+            x, y = fire_list.pop(0)
+            if valid_coordinate((x, y), bounds):
+                return x, y
+
+
 # Takes the strategy from the player and picks the right function to use for shooting
 # strat is the strategy, bounds are the x and y bounds for the firing functions
 # Returns the x and y location of the shot # Todo test new strategies here
-def strategy_choose(strat: str, bounds: tuple) -> tuple:
+def strategy_choose(strat: str, bounds: tuple, fire_list: list) -> tuple:
     if strat == "Random":
         return random_fire(bounds)
     elif strat == "Blanket":
         return blanket_fire(bounds)
+    elif strat == "Smart random":
+        return smart_random_fire(bounds, fire_list)
 
 
 if __name__ == "__main__":
