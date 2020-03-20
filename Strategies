@@ -23,6 +23,15 @@ def valid_coordinate(coord: tuple, bounds: tuple) -> bool:
         return False
 
 
+# This ensures that all the random shots are "odd" parts of the board, think a checkers board.
+# If this was used by itself, all ships would be hit, because no ship is of length one, but no ship would be killed
+# This is used in tandem with the smart random fire so that if there is a hit, the player will be able to kill the ship
+# True if the shot should be fired
+def check_odd(coord: tuple) -> bool:
+    x, y = coord
+    return (x + y) % 2 == 1
+
+
 # This strategy is a completely random firing, checking if the position was already fired upon, chooses a new location
 # Bounds are the x and y bounds of the board for the random shot
 # Returns the x and y location of the shot
@@ -77,9 +86,31 @@ def smart_random_fire(bounds: tuple, fire_list: list) -> tuple:
                 return x, y
 
 
+# This strategy is to randomly choose a location to shoot at until there is a hit, but only for "odd" coordinates.
+# Once there is a hit, to shoot once on each side of the hit until there is another hit.
+# Once there is the second hit, follow that direction until a kill.
+# If there is a miss before the kill, need to go back to the original hit and go in the opposite direction until kill.
+# Returns the x and y location of the shot
+# Todo test
+def smart_random_odd_fire(bounds: tuple, fire_list: list) -> tuple:
+    if len(fire_list) == 0:
+        coord = random_fire(bounds)
+        test = check_odd(coord)
+        index = 1
+        while not test:
+            coord = random_fire(bounds)
+            test = check_odd(coord)
+        return coord
+    else:
+        while True:
+            x, y = fire_list.pop(0)
+            if valid_coordinate((x, y), bounds):
+                return x, y
+
+
 # Takes the strategy from the player and picks the right function to use for shooting
 # strat is the strategy, bounds are the x and y bounds for the firing functions
-# Returns the x and y location of the shot # Todo test new strategies here
+# Returns the x and y location of the shot # Todo test new strategies
 def strategy_choose(strat: str, bounds: tuple, fire_list: list) -> tuple:
     if strat == "Random":
         return random_fire(bounds)
@@ -87,6 +118,8 @@ def strategy_choose(strat: str, bounds: tuple, fire_list: list) -> tuple:
         return blanket_fire(bounds)
     elif strat == "Smart random":
         return smart_random_fire(bounds, fire_list)
+    elif strat == "Smart odd":
+        return smart_random_odd_fire(bounds, fire_list)
 
 
 if __name__ == "__main__":
