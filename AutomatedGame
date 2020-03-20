@@ -50,7 +50,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
             x, y = strat.strategy_choose(player_a.get_strategy(), player_a_bounds, player_a.fire_list())
             h, k = fy.hit_check(x, y, player_b)
 
-            if h:
+            if h and not k:
                 player_a.add_to_previous_hits((x, y))
                 player_a.add_consecutive_hits()
             elif k:
@@ -65,7 +65,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
             x, y = strat.strategy_choose(player_b.get_strategy(), player_b_bounds, player_b.fire_list())
             h, k = fy.hit_check(x, y, player_a)
 
-            if h:
+            if h and not k:
                 player_b.add_to_previous_hits((x, y))
                 player_b.add_consecutive_hits()
             elif k:
@@ -101,12 +101,13 @@ if __name__ == "__main__":
     # iterations = int(input("Please input number of iterations: "))
 
     # Todo delete this part, uncomment above after everything works
+    # Standard for analysis is 5 ships, 250 iterations
     ship_num = 5
     p1_name = "A"
-    p1_strat = "Blanket"
+    p1_strat = "Smart random"
     p2_name = "B"
-    p2_strat = "Random"
-    iterations = 100
+    p2_strat = "Blanket"
+    iterations = 250
 
     player1 = fy.AutoPlayers(p1_name, p1_strat)
     player2 = fy.AutoPlayers(p2_name, p2_strat)
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     data = dict()
 
     # Calls play for a certain number of times, used to get statistics
-    for s in range(1, ship_num):
+    for s in range(1, ship_num + 1):
         for i in range(0, iterations):
             play(player1, player2, s)
             player1.reset()
@@ -129,4 +130,4 @@ if __name__ == "__main__":
 
     df = pd.DataFrame(data)
     # print(df)
-    # df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
+    df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
