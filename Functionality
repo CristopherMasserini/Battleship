@@ -82,19 +82,75 @@ class Players(object):
         self._wins += 1
 
 
-class AutoPlayers(Players):
+class AutoPlayers(Players):  # Todo finish testing
     """
     Creates a class for the automated players. A subclass of Players
 
     name (str): The name of the player
     strategy (str): The strategy the player is following
+    consecutive_hits (int): The number of hits the player has on a ship
+    previous_hits (list): A list of coordinates where the player hit a ship
+    potential_coord (list): A list of potential next coordinates if a ship was hit
     """
     def __init__(self, name, strategy):
         super().__init__(name=name)
         self._strategy = strategy
+        self._consecutive_hits = 0
+        self._previous_hits = list()
+        self._potential_coord = list()
 
+    # Gets the players strategy
     def get_strategy(self) -> str:
         return self._strategy
+
+    # Resets the variables
+    def reset(self):
+        super().reset()
+        self._consecutive_hits = 0
+        self._previous_hits = list()
+        self._potential_coord = list()
+
+    # Adds a set of coordinates to the previous hits list
+    def add_to_previous_hits(self, coord: tuple):
+        self._previous_hits.append(coord)
+
+    # Add a hit to consecutive
+    def add_consecutive_hits(self, coord: tuple):
+        self._consecutive_hits += 1
+
+    # Resets hits list
+    def a_kill(self):
+        self._consecutive_hits = 0
+        self._previous_hits = list()
+        self._potential_coord = list()
+
+    # Develops list of coordinates to fire upon for smart fire strategy.
+    # Goes before the actual shooting and checking if it is a hit
+    # Does not care if it is valid. That check is done in strategy
+    def fire_list(self) -> list:
+        if self._consecutive_hits == 0:
+            return list()
+        elif self._consecutive_hits == 1:
+            x_hit, y_hit = self._previous_hits[-1]
+            x_left = x_hit - 1
+            x_right = x_hit + 1
+            y_up = y_hit - 1
+            y_down = y_hit + 1
+            _potential_coord = [(x_left, y_hit), (x_right, y_hit), (x_hit, y_up), (x_hit, y_down)]
+        else:
+            x_hit1, y_hit1 = self._previous_hits[-1]
+            x_hit2, y_hit2 = self._previous_hits[-2]
+            dif_x = x_hit2 - x_hit1
+            dif_y = y_hit2 - y_hit1
+            if dif_x != 0:
+                _potential_coord = [(x_hit2 + 1, y_hit1), (x_hit2 + 2, y_hit1),
+                                    (x_hit2 - 1, y_hit1), (x_hit2 - 2, y_hit1)]
+            elif dif_y != 0:
+                _potential_coord = [(x_hit1, y_hit2 + 1), (x_hit1, y_hit2 + 2),
+                                    (x_hit1, y_hit2 - 1), (x_hit1, y_hit2 - 2)]
+        return self._potential_coord
+
+
 
 
 # Creates a new ship with a name and length
