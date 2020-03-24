@@ -42,37 +42,80 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
     player_a_bounds = (11, 20, 1, 10)
     player_b_bounds = (0, 9, 1, 10)
 
+    player_a_prev = "Miss"
+    player_b_prev = "Miss"
+
+    player_a_list_to_use = list()
+    player_b_list_to_use = list()
+
     # Shoots a shot, based off strategy. Checks if the shot is a hit, then checks if the other player lost.
     # If the other player lost, winning players turns get added to turns list
     # The ratio of ships alive to total ships of the winning player gets added to ratio list
     while True:
         if player_turn == "a":
-            x, y = strat.strategy_choose(player_a.get_strategy(), player_a_bounds, player_a.fire_list())
+            first = player_a.get_init_hit()
+            second = player_a.get_second_hit()
+
+            if first:
+
+                if not second:
+                    player_a_list_to_use = player_a.around_init_hit()
+                elif second and player_a_prev == 'Hit':
+                    player_a_list_to_use = player_a.second_hit_direction()
+                elif second and player_a_prev == 'Miss':
+                    player_a_list_to_use = player_a.second_hit_anti_direction()
+
+            x, y = strat.strategy_choose(player_a.get_strategy(), player_a_bounds, player_a_list_to_use)
+
             h, k = fy.hit_check(x, y, player_b)
 
             if h and not k:
-                player_a.add_to_previous_hits((x, y))
-                player_a.add_consecutive_hits()
-            elif k:
-                player_a.a_kill()
+                player_a_prev = "Hit"
+                if not first:
+                    player_a.an_init_hit((x, y))
+                if first and not second:
+                    player_a.a_second_hit((x, y))
+            elif h and k:
+                player_a_prev = "Miss"
+                player_a.reset_auto()
+                player_a_list_to_use = list()
+            else:
+                player_a_prev = "Miss"
 
-            player_turn = "b"
-            turns_a += 1
             if lost(player_b):
                 add_stats(player_a, ships)
                 break
+
         else:
-            x, y = strat.strategy_choose(player_b.get_strategy(), player_b_bounds, player_b.fire_list())
+            first = player_b.get_init_hit()
+            second = player_b.get_second_hit()
+
+            if first:
+
+                if not second:
+                    player_b_list_to_use = player_b.around_init_hit()
+                elif second and player_b_prev == 'Hit':
+                    player_b_list_to_use = player_b.second_hit_direction()
+                elif second and player_b_prev == 'Miss':
+                    player_b_list_to_use = player_b.second_hit_anti_direction()
+
+            x, y = strat.strategy_choose(player_b.get_strategy(), player_b_bounds, player_b_list_to_use)
+
             h, k = fy.hit_check(x, y, player_a)
 
             if h and not k:
-                player_b.add_to_previous_hits((x, y))
-                player_b.add_consecutive_hits()
-            elif k:
-                player_b.a_kill()
+                player_b_prev = "Hit"
+                if not first:
+                    player_b.an_init_hit((x, y))
+                if first and not second:
+                    player_b.a_second_hit((x, y))
+            elif h and k:
+                player_b_prev = "Miss"
+                player_b.reset_auto()
+                player_b_list_to_use = list()
+            else:
+                player_b_prev = "Miss"
 
-            player_turn = "a"
-            turns_b += 1
             if lost(player_a):
                 add_stats(player_b, ships)
                 break
@@ -95,9 +138,9 @@ if __name__ == "__main__":
 
     # ship_num = int(input("Please input number of ships: "))
     # p1_name = input("Please input Player 1's name: ")
-    # p1_strat = input("Please input Player 1's strategy \n (Random, Blanket, Smart random): ")
+    # p1_strat = input("Please input Player 1's strategy \n (Random, Blanket, Smart random, Smart odd): ")
     # p2_name = input("Please input Player 2's name: ")
-    # p2_strat = input("Please input Player 2's strategy \n (Random, Blanket, Smart random): ")
+    # p2_strat = input("Please input Player 2's strategy \n (Random, Blanket, Smart random, Smart odd): ")
     # iterations = int(input("Please input number of iterations: "))
 
     # Todo delete this part, uncomment above after everything works
@@ -106,8 +149,8 @@ if __name__ == "__main__":
     p1_name = "A"
     p1_strat = "Smart random"
     p2_name = "B"
-    p2_strat = "Blanket"
-    iterations = 250
+    p2_strat = "Smart random"
+    iterations = 10
 
     player1 = fy.AutoPlayers(p1_name, p1_strat)
     player2 = fy.AutoPlayers(p2_name, p2_strat)
@@ -129,5 +172,5 @@ if __name__ == "__main__":
         win_strat_list = list()
 
     df = pd.DataFrame(data)
-    # print(df)
-    df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
+    print(df)
+    # df.to_csv(rf'{p1_strat}_vs_{p2_strat}.csv', index=False)
