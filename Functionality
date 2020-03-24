@@ -82,75 +82,104 @@ class Players(object):
         self._wins += 1
 
 
-class AutoPlayers(Players):  # Todo finish testing
+class AutoPlayers(Players):  # Todo finish testing and edit to fit now
     """
     Creates a class for the automated players. A subclass of Players
 
     name (str): The name of the player
     strategy (str): The strategy the player is following
-    consecutive_hits (int): The number of hits the player has on a ship
-    previous_hits (list): A list of coordinates where the player hit a ship
-    potential_coord (list): A list of potential next coordinates if a ship was hit
+    init_hit (tuple): The location of an initial hit on a ship
+    second_hit (tuple): The location of the second hit on a ship
+    direction_list (list): A list of potential next coordinates in the direction from initial hit to second hit
+    anti_direction_list (list):
+        A list of potential next coordinates in the opposite direction from initial hit to second hit
     """
     def __init__(self, name, strategy):
         super().__init__(name=name)
         self._strategy = strategy
-        self._consecutive_hits = 0
-        self._previous_hits = list()
-        self._potential_coord = list()
+        self._init_hit = tuple()
+        self._second_hit = tuple()
+        self._direction_list = list()
+        self._anti_direction_list = list()
 
     # Gets the players strategy
     def get_strategy(self) -> str:
         return self._strategy
 
     # Resets the variables
-    def reset(self):
-        super().reset()
-        self._consecutive_hits = 0
-        self._previous_hits = list()
-        self._potential_coord = list()
+    def reset_auto(self):
+        self._init_hit = tuple()
+        self._second_hit = tuple()
+        self._direction_list = list()
+        self._anti_direction_list = list()
 
-    # Adds a set of coordinates to the previous hits list
-    def add_to_previous_hits(self, coord: tuple):
-        self._previous_hits.append(coord)
+    # Add an initial hit
+    def an_init_hit(self, coord: tuple):
+        self._init_hit = coord
 
-    # Add a hit to consecutive
-    def add_consecutive_hits(self, coord: tuple):
-        self._consecutive_hits += 1
+    # Get the initial hit
+    def get_init_hit(self) -> tuple:
+        return self._init_hit
+
+    # Add a second hit
+    def a_second_hit(self, coord: tuple):
+        self._second_hit = coord
+
+    # Get the second hit
+    def get_second_hit(self) -> tuple:
+        return self._second_hit
+
+    # Get the direction list
+    def get_direction_list(self) -> list:
+        return self._direction_list
+
+    # Get the anti direction list
+    def get_anti_direction_list(self) -> list:
+        return self._anti_direction_list
 
     # Resets hits list
     def a_kill(self):
-        self._consecutive_hits = 0
-        self._previous_hits = list()
-        self._potential_coord = list()
+        self._init_hit = tuple()
+        self._second_hit = tuple()
+        self._direction_list = list()
+        self._anti_direction_list = list()
+
+    # creates a list to go around the initial hit coordinates
+    def around_init_hit(self) -> list:
+        x_hit, y_hit = self._init_hit
+
+        x_left = x_hit - 1
+        x_right = x_hit + 1
+        y_up = y_hit - 1
+        y_down = y_hit + 1
+
+        return [(x_left, y_hit), (x_right, y_hit), (x_hit, y_up), (x_hit, y_down)]
 
     # Develops list of coordinates to fire upon for smart fire strategy.
-    # Goes before the actual shooting and checking if it is a hit
     # Does not care if it is valid. That check is done in strategy
-    def fire_list(self) -> list:
-        if self._consecutive_hits == 0:
-            return list()
-        elif self._consecutive_hits == 1:
-            x_hit, y_hit = self._previous_hits[-1]
-            x_left = x_hit - 1
-            x_right = x_hit + 1
-            y_up = y_hit - 1
-            y_down = y_hit + 1
-            _potential_coord = [(x_left, y_hit), (x_right, y_hit), (x_hit, y_up), (x_hit, y_down)]
-        else:
-            x_hit1, y_hit1 = self._previous_hits[-1]
-            x_hit2, y_hit2 = self._previous_hits[-2]
-            dif_x = x_hit2 - x_hit1
-            dif_y = y_hit2 - y_hit1
-            if dif_x != 0:
-                _potential_coord = [(x_hit2 + 1, y_hit1), (x_hit2 + 2, y_hit1),
-                                    (x_hit2 - 1, y_hit1), (x_hit2 - 2, y_hit1)]
-            elif dif_y != 0:
-                _potential_coord = [(x_hit1, y_hit2 + 1), (x_hit1, y_hit2 + 2),
-                                    (x_hit1, y_hit2 - 1), (x_hit1, y_hit2 - 2)]
-        return self._potential_coord
+    def second_hit_direction(self) -> list:
+        x_hit1, y_hit1 = self._init_hit
+        x_hit2, y_hit2 = self._second_hit
+        dif_x = x_hit2 - x_hit1
+        dif_y = y_hit2 - y_hit1
 
+        if dif_x != 0:
+            return [(x_hit2 + dif_x, y_hit1), (x_hit2 + (2 * dif_x), y_hit1), (x_hit2 + (3 * dif_x), y_hit1)]
+        elif dif_y != 0:
+            return [(x_hit1, y_hit2 + dif_y), (x_hit1, y_hit2 + (2 * dif_y)), (x_hit1, y_hit2 + (3 * dif_y))]
 
+    # Develops list of coordinates to fire upon for smart fire strategy.
+    # Does not care if it is valid. That check is done in strategy
+    def second_hit_anti_direction(self) -> list:
+        x_hit1, y_hit1 = self._init_hit
+        x_hit2, y_hit2 = self._second_hit
+        dif_x = x_hit1 - x_hit2
+        dif_y = y_hit1 - y_hit2
+
+        if dif_x != 0:
+            return [(x_hit1 + dif_x, y_hit1), (x_hit1 + (2 * dif_x), y_hit1), (x_hit1 + (3 * dif_x), y_hit1)]
+        elif dif_y != 0:
+            return [(x_hit1, y_hit1 + dif_y), (x_hit1, y_hit1 + (2 * dif_y)), (x_hit1, y_hit1 + (3 * dif_y))]
 
 
 # Creates a new ship with a name and length
