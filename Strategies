@@ -81,7 +81,11 @@ def smart_random_fire(bounds: tuple, fire_list: list) -> tuple:
         return random_fire(bounds)
     else:
         while True:
-            x, y = fire_list.pop(0)
+            try:
+                x, y = fire_list.pop(0)
+            except IndexError:
+                return random_fire(bounds)
+
             if valid_coordinate((x, y), bounds):
                 coordinates_shot.append((x, y))
                 return x, y
