@@ -64,6 +64,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
                     player_a_list_to_use = player_a.second_hit_direction()
                 elif second and player_a_prev == 'Miss':
                     player_a_list_to_use = player_a.second_hit_anti_direction()
+                    player_a.set_direction_list(player_a_list_to_use)
 
             x, y = strat.strategy_choose(player_a.get_strategy(), player_a_bounds, player_a_list_to_use)
 
@@ -75,7 +76,7 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
                     player_a.an_init_hit((x, y))
                 if first and not second:
                     player_a.a_second_hit((x, y))
-            elif h and k:
+            elif k:
                 player_a_prev = "Miss"
                 player_a.reset_auto()
                 player_a_list_to_use = list()
@@ -85,6 +86,8 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
             if lost(player_b):
                 add_stats(player_a, ships)
                 break
+
+            player_turn = "b"
 
         else:
             first = player_b.get_init_hit()
@@ -120,6 +123,8 @@ def play(player_a: fy.AutoPlayers, player_b: fy.AutoPlayers, ships: int):
                 add_stats(player_b, ships)
                 break
 
+            player_turn = "a"
+
     # Resets these values so for bookkeeping
     turns_a = 0
     turns_b = 0
@@ -150,7 +155,7 @@ if __name__ == "__main__":
     p1_strat = "Smart random"
     p2_name = "B"
     p2_strat = "Smart random"
-    iterations = 10
+    iterations = 1
 
     player1 = fy.AutoPlayers(p1_name, p1_strat)
     player2 = fy.AutoPlayers(p2_name, p2_strat)
