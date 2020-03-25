@@ -83,6 +83,7 @@ def smart_random_fire(bounds: tuple, fire_list: list) -> tuple:
         while True:
             x, y = fire_list.pop(0)
             if valid_coordinate((x, y), bounds):
+                coordinates_shot.append((x, y))
                 return x, y
 
 
@@ -100,12 +101,21 @@ def smart_random_odd_fire(bounds: tuple, fire_list: list) -> tuple:
         while not test:
             coord = random_fire(bounds)
             test = check_odd(coord)
+        coordinates_shot.append(coord)
         return coord
     else:
         while True:
-            x, y = fire_list.pop(0)
-            if valid_coordinate((x, y), bounds):
-                return x, y
+            try:
+                x, y = fire_list.pop(0)
+                if valid_coordinate((x, y), bounds):
+                    coordinates_shot.append((x, y))
+                    return x, y
+            except IndexError:
+                while not test:
+                    coord = random_fire(bounds)
+                    test = check_odd(coord)
+                coordinates_shot.append(coord)
+                return coord
 
 
 # Takes the strategy from the player and picks the right function to use for shooting
