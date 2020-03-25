@@ -133,6 +133,10 @@ class AutoPlayers(Players):  # Todo finish testing and edit to fit now
     def get_direction_list(self) -> list:
         return self._direction_list
 
+    # set the direction list
+    def set_direction_list(self, new_list: list):
+        self._direction_list = new_list
+
     # Get the anti direction list
     def get_anti_direction_list(self) -> list:
         return self._anti_direction_list
