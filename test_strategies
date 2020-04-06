@@ -2,9 +2,8 @@ import unittest
 import strategies as strat
 
 
-# Testing functions for different strategies
-class TestStrategies(unittest.TestCase):
-
+# Testing different helper functions
+class TestHelpers(unittest.TestCase):
     # Testing the check shot function
     def test_coordinates_shot(self):
         strat.coordinates_shot = list()
@@ -25,6 +24,78 @@ class TestStrategies(unittest.TestCase):
         strat.coordinates_shot.append((1, 2))
 
         self.assertFalse(strat.check_shot(3, 4))
+
+        # Testing the strategy choose function with random strategy
+    def test_strategy_choose_random(self):
+        strat.coordinates_shot = list()
+        x, y = strat.strategy_choose("Random", (0, 9, 1, 10), list())
+
+        self.assertIn(x, range(0, 10))
+        self.assertIn(y, range(1, 11))
+
+    # Testing the strategy choose function with random strategy
+    def test_strategy_choose_blanket(self):
+        strat.coordinates_shot = list()
+        x, y = strat.strategy_choose("Blanket", (0, 9, 1, 10), list())
+
+        self.assertIn(x, range(0, 10))
+        self.assertIn(y, range(1, 11))
+        self.assertEqual(strat.coordinates_shot, [(0, 1)])
+
+    def test_strategy_choose_smart_random(self):
+        strat.coordinates_shot = list()
+        x, y = strat.strategy_choose("Smart random", (0, 9, 1, 10), list())
+
+        self.assertIn(x, range(0, 10))
+        self.assertIn(y, range(1, 11))
+
+    def test_strategy_choose_smart_odd(self):
+        strat.coordinates_shot = list()
+        x, y = strat.strategy_choose("Smart odd", (0, 9, 1, 10), list())
+
+        self.assertIn(x, range(0, 10))
+        self.assertIn(y, range(1, 11))
+        self.assertTrue(strat.check_odd((x, y)))
+
+    # Checks the coordinates, odd should be true
+    def test_check_odd_true(self):
+        x = 1
+        y = 2
+        self.assertTrue(strat.check_odd((x, y)))
+
+    # Checks the coordinates, odd should be false
+    def test_check_odd_false(self):
+        x = 5
+        y = 7
+        self.assertFalse(strat.check_odd((x, y)))
+
+    # Checks the coordinates, valid should be true
+    def test_valid_coordinate_true(self):
+        x = 1
+        y = 7
+        self.assertTrue(strat.valid_coordinate((x, y), (0, 9, 1, 10)))
+
+    # Checks the coordinates, valid should be true
+    def test_valid_coordinate_true_2(self):
+        x = 13
+        y = 9
+        self.assertTrue(strat.valid_coordinate((x, y), (11, 20, 1, 10)))
+
+    # Checks the coordinates, valid should be false
+    def test_valid_coordinate_false(self):
+        x = 10
+        y = 1
+        self.assertFalse(strat.valid_coordinate((x, y), (0, 9, 1, 10)))
+
+    # Checks the coordinates, valid should be false
+    def test_valid_coordinate_false_2(self):
+        x = 15
+        y = 0
+        self.assertFalse(strat.valid_coordinate((x, y), (11, 20, 1, 10)))
+
+
+# Testing functions for different strategies
+class TestStrategies(unittest.TestCase):
 
     # Testing the random fire function
     def test_random_fire(self):
@@ -72,23 +143,6 @@ class TestStrategies(unittest.TestCase):
         self.assertIn(y, range(1, 11))
         self.assertIn((1, 2), strat.coordinates_shot)
         self.assertIn((12, 1), strat.coordinates_shot)
-
-    # Testing the strategy choose function with random strategy
-    def test_strategy_choose_random(self):
-        strat.coordinates_shot = list()
-        x, y = strat.strategy_choose("Random", (0, 9, 1, 10))
-
-        self.assertIn(x, range(0, 10))
-        self.assertIn(y, range(1, 11))
-
-    # Testing the strategy choose function with random strategy
-    def test_strategy_choose_blanket(self):
-        strat.coordinates_shot = list()
-        x, y = strat.strategy_choose("Blanket", (0, 9, 1, 10))
-
-        self.assertIn(x, range(0, 10))
-        self.assertIn(y, range(1, 11))
-        self.assertEqual(strat.coordinates_shot, [(0, 1)])
 
 
 if __name__ == '__main__':
