@@ -144,6 +144,15 @@ class TestStrategies(unittest.TestCase):
         self.assertIn((1, 2), strat.coordinates_shot)
         self.assertIn((12, 1), strat.coordinates_shot)
 
+    # Testing the smart random odd fire function to make sure random shot is odd
+    def test_smart_random_odd_fire(self):
+        strat.coordinates_shot = list()
+        x, y = strat.smart_random_odd_fire((0, 9, 1, 10), list())
+
+        self.assertIn(x, range(0, 10))
+        self.assertIn(y, range(1, 11))
+        self.assertTrue(strat.check_odd((x, y)))
+
 
 if __name__ == '__main__':
     unittest.main()
